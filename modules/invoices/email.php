@@ -65,7 +65,7 @@ $smarty -> assign('biller',$biller);
 $smarty -> assign('customer',$customer);
 $smarty -> assign('invoice',$invoice);
 $smarty -> assign('preferences',$preference);
-$smarty -> assign('config', $config);
+$smarty -> assign('config', $config->toArray());
 
 $smarty -> assign('pageActive', 'invoice');
 $smarty -> assign('active_tab', '#money');
