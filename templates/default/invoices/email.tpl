@@ -50,7 +50,7 @@
 		</tr>
 		<tr>
 			<th>{$LANG.message}</th>
-			<td><textarea name="email_notes" class="editor" rows="16" cols="70"></textarea></td>
+			<td><textarea name="email_notes" class="editor" rows="16" cols="70">{$config.invoice.email.default|htmlsafe}</textarea></td>
 		</tr>
 	</table>
 </div>
