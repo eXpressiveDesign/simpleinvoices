@@ -320,7 +320,7 @@ class Pipeline {
 
     $this->pre_tree_filters = array();
 
-    $this->_dispatcher =& new Dispatcher();
+    $this->_dispatcher = new Dispatcher();
 
     $this->_dispatcher->add_event('before-page-heights');
     $this->_dispatcher->add_event('before-page');
@@ -446,10 +446,10 @@ class Pipeline {
 //   }
 
   function &get_counters() {
-    $counter_collection =& new CSSCounterCollection();
+    $counter_collection = new CSSCounterCollection();
 
     foreach ($this->_counters as $counter_name => $counter_value) {
-      $counter =& new CSSCounter($counter_name);
+      $counter = new CSSCounter($counter_name);
       $counter->set($counter_value);
       $counter_collection->add($counter);
     };
@@ -584,7 +584,7 @@ class Pipeline {
   }
 
   function &get_page_rules($page_no) {
-    $collection =& new CSSPropertyCollection();
+    $collection = new CSSPropertyCollection();
 
     foreach ($this->_page_at_rules[CSS_PAGE_SELECTOR_ALL] as $rule) {
       $collection->merge($rule->css);
