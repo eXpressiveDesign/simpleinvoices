@@ -192,7 +192,7 @@ EOF
                      $height,
                      $object_id, 
                      $generation_id) {
-      $this->PDFIndirectObject($handler, 
+      parent::__construct($handler, 
                                $object_id, 
                                $generation_id);
 
@@ -232,7 +232,7 @@ EOF
                                  $object_id, 
                                  $generation_id,
                                  $content) {
-      $this->PDFIndirectObject($handler, 
+      parent::__construct($handler, 
                                $object_id, 
                                $generation_id);
 
@@ -262,7 +262,7 @@ EOF
     function __construct(&$handler,
                            $object_id, 
                            $generation_id) {
-      $this->PDFIndirectObject($handler,
+      parent::__construct($handler,
                                $object_id, 
                                $generation_id);
     }
@@ -425,7 +425,7 @@ EOF
                            $object_id, 
                            $generation_id,
                            $group_name) {
-      $this->PDFIndirectObject($handler, 
+      parent::__construct($handler, 
                                $object_id, 
                                $generation_id);
 
