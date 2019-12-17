@@ -148,9 +148,7 @@ function parse_fonts_node_config_file($root, &$resolver) {
 }
 
 function parse_config_file($filename) {
-  // Save old magic_quotes_runtime value and disable it
-  $mq_runtime = get_magic_quotes_runtime();
- 
+
   $doc = TreeBuilder::build(file_get_contents($filename));
   $root=$doc->document_element();
 
@@ -175,7 +173,6 @@ function parse_config_file($filename) {
     };
   } while ($child = $child->next_sibling());
 
-  // Restore old magic_quotes_runtime values
-  set_magic_quotes_runtime($mq_runtime);
+ 
 }
 ?>
