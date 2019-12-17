@@ -311,7 +311,7 @@ class Pipeline {
 
   var $_page_break_strategy;
 
-  function Pipeline() {
+  function __construct() {
     $this->_counters = array();
     $this->_footnotes = array();
 

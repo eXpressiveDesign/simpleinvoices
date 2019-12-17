@@ -50,7 +50,7 @@ class FontResolver {
     return $this->ps_fonts[$family][$weight][$style][$encoding];
   }
   
-  function FontResolver() {
+  function __construct() {
     $this->families  = array();
     $this->aliases   = array();
     $this->overrides = array();

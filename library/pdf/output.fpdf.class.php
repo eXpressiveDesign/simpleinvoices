@@ -11,7 +11,7 @@ class OutputDriverFPDF extends OutputDriverGenericPDF {
   var $cx;
   var $cy;
 
-  function OutputDriverFPDF() {
+  function __construct() {
     $this->OutputDriverGenericPDF();   
   }
 
