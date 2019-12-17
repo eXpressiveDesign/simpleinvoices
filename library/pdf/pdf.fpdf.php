@@ -320,7 +320,7 @@ EOF
                                        $generation_id,
                                        $rect,
                                        $link) {
-      $this->PDFAnnotation($handler, 
+      parent::__construct($handler, 
                            $object_id,
                            $generation_id);
 
@@ -348,7 +348,7 @@ EOF
                                        $generation_id,
                                        $rect,
                                        $link) {
-      $this->PDFAnnotation($handler, 
+      parent::__construct($handler, 
                            $object_id, 
                            $generation_id);
 
@@ -400,7 +400,7 @@ EOF
                                  $object_id, 
                                  $generation_id,
                                  $rect) {
-      $this->PDFAnnotation($handler, 
+      parent::__construct($handler, 
                            $object_id, 
                            $generation_id);
 
@@ -517,7 +517,7 @@ EOF
                       $generation_id, 
                       $rect, 
                       $field_name) {
-      $this->PDFAnnotationWidget($handler, 
+                        parent::__construct($handler, 
                                  $object_id, 
                                  $generation_id, 
                                  $rect);
@@ -797,7 +797,7 @@ EOF
                            $generation_id,
                            $rect, 
                            $value) {
-      $this->PDFAnnotationWidget($handler,
+                            parent::__construct($handler,
                                  $object_id, 
                                  $generation_id,
                                  $rect);
