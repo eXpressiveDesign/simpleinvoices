@@ -138,7 +138,7 @@ if (!class_exists('FPDF')) {
     var $_content;
 
     function __construct($mapping, &$handler, $object_id, $generation_id) {
-      $this->PDFIndirectObject($handler,
+      parent::__construct($handler,
                                $object_id, 
                                $generation_id);
 
