@@ -78,8 +78,7 @@ class email
 			// Add attachments
 			if($this->attachment)
 			{
-				var_dump('./tmp/cache/'.$this->attachment);
-				file_exists('./tmp/cache/'.$this->attachment);
+				var_dump('./tmp/cache/'.$this->attachment, file_exists('./tmp/cache/'.$this->attachment));
 				$mail->addAttachment('./tmp/cache/'.$this->attachment);
 			}
 			
