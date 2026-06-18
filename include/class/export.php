@@ -620,7 +620,7 @@ class export
                 break;
             }
         }
-
+var_dump($data);
         return $data;
     }
 
