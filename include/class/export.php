@@ -31,7 +31,6 @@ class export
                 break;
 
             case "pdf":
-                var_dump($data, $this->file_location, $this->file_name);
                 pdfThis($data, $this->file_location, $this->file_name);
                 if ($this->file_location === "download" || $this->file_location === "inline") exit();
                 break;

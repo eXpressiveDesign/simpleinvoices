@@ -3509,6 +3509,7 @@ function pdfThis($html, $file_location = '', $pdfname = 'invoice')
 				$mpdf->WriteHTML($html_to_pdf);
 
 				$filename = $pdfname . '.pdf';
+				var_dump($filename);
 				if ($file_location === "inline") {
 					$mpdf->Output($filename, \Mpdf\Output\Destination::INLINE);
 				} elseif ($file_location === "download") {
