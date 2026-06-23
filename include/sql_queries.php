@@ -3302,7 +3302,7 @@ function getURL()
 	$host = si_request_public_http_host();
 	$_SERVER['FULL_URL'] .= $config->authentication->http . $host . $dir;
 
-	var_dump($_SERVER['FULL_URL']);exit;
+	var_dump($dir, $_SERVER['FULL_URL']);exit;
 
 	return $_SERVER['FULL_URL'];
 
