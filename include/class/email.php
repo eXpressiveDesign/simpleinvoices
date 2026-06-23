@@ -78,10 +78,11 @@ class email
 			// Add attachments
 			if($this->attachment)
 			{
+				var_dump(realpath('./tmp/cache/'));exit;
 				$mail->addAttachment('./tmp/cache/'.$this->attachment);
 			}
 
-			var_dump(realpath('./tmp/cache/'));exit;
+			
 			
 			$mail->send();
 
