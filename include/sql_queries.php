@@ -3296,13 +3296,12 @@ function getURL()
 	$dir = dirname($_SERVER['PHP_SELF'] ?? '');
 	//remove incorrect slashes for WinXP etc.
  	$dir = str_replace('\\','',$dir);
+	$dir = rtrim($dir, '/');
 
 	$_SERVER['FULL_URL'] = si_request_is_https() ? 'https://' : 'http://';
 
 	$host = si_request_public_http_host();
 	$_SERVER['FULL_URL'] .= $config->authentication->http . $host . $dir;
-
-	var_dump($dir, $_SERVER['FULL_URL']);exit;
 
 	return $_SERVER['FULL_URL'];
 
