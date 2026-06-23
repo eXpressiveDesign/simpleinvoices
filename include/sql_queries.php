@@ -3368,143 +3368,62 @@ function pdfThis($html, $file_location = '', $pdfname = 'invoice')
 	 * Warning: if you have any files (like CSS stylesheets and/or images referenced by this file,
 	 * use absolute links (like http://my.host/image.gif).
 	 *
-	 * @param $path_to_html String path to source html file.
-	 * @param $path_to_pdf  String path to file to save generated PDF to.
+	 * @param string $path_to_html String path to source html file.
+	 * @param string $path_to_pdf  String path to file to save generated PDF to.
 	 */
 	if(!function_exists('convert_to_pdf'))
 	{
-		function convert_to_pdf($html_to_pdf, $pdfname, $file_location="") {
-
+		function convert_to_pdf(string $html_to_pdf, string $pdfname, string $file_location = "") {
 			global $config;
+
 			$sysDefaults = getSystemDefaults();
+			$app_root = str_replace('\\', '/', realpath(dirname(__DIR__)));
+    		$base_url = rtrim(getURL(), '/');
 
-			try {
-				// Convert app URLs to local filesystem paths so mPDF can load CSS/images
-				// without fetching from localhost (which often fails in CLI/Docker/local dev)
-				$base_url = rtrim(getURL(), '/');
-				$app_root = str_replace('\\', '/', realpath(dirname(__DIR__)));
-				if ($base_url !== '' && $app_root !== false) {
-					$html_to_pdf = str_replace($base_url . '/', $app_root . '/', $html_to_pdf);
-					$html_to_pdf = str_replace($base_url, $app_root, $html_to_pdf);
-					// Decode URL-encoded path segments (e.g. %20) in local paths so fopen() can open them
-					$html_to_pdf = preg_replace_callback(
-						'/\b(href|src)=(["\'])([^\2]*?)\2/',
-						function ($m) use ($app_root) {
-							$val = $m[3];
-							if (strpos($val, $app_root) === 0) {
-								$val = rawurldecode($val);
-							}
-							return $m[1] . '=' . $m[2] . $val . $m[2];
-						},
-						$html_to_pdf
-					);
+			$resolveToLocalPath = function ($path, $base_url, $app_root) {
+				$path = rawurldecode($path);
+				// If it's a full URL, strip the base_url to get the relative path
+				if (strpos($path, $base_url) === 0) {
+					$path = substr($path, strlen($base_url));
 				}
+				// Remove leading slash to join correctly
+				return $app_root . '/' . ltrim($path, '/');
+			};			
 
-				// Inline stylesheets so PDF is always styled (mPDF often doesn't load linked CSS
-				// when base_url is wrong or in Docker/CLI). Only inline local paths under app root.
-				if ($app_root !== false) {
-					$html_to_pdf = preg_replace_callback(
-						'/<link\s+[^>]*rel\s*=\s*["\']stylesheet["\'][^>]*href\s*=\s*["\']([^"\']+)["\'][^>]*\s*\/?>/i',
-						function ($m) use ($app_root) {
-							$path = rawurldecode($m[1]);
-							$path = str_replace('\\', '/', $path);
-							// Already a local absolute path under app root (after URL replacement above)
-							if (strpos($path, $app_root) === 0) {
-								// use as-is
-							} else {
-								// URL or relative path: take path segment (e.g. /templates/invoices/tabler/style.css)
-								$pathSegment = $path;
-								if (preg_match('#^https?://[^/]+(/.+)$#', $path, $urlParts)) {
-									$pathSegment = $urlParts[1];
-								} elseif ($path !== '' && $path[0] !== '/') {
-									$pathSegment = '/' . $path;
-								}
-								$path = $app_root . $pathSegment;
-							}
-							if (!is_file($path) || !is_readable($path)) {
-								return $m[0];
-							}
-							$real = str_replace('\\', '/', realpath($path));
-							if ($real === false || strpos($real, $app_root) !== 0) {
-								return $m[0];
-							}
-							$css = file_get_contents($path);
-							if ($css === false) {
-								return $m[0];
-							}
-							return '<style type="text/css">' . $css . '</style>';
-						},
-						$html_to_pdf
-					);
+			// 1. Process HTML for mPDF
+			$dom = new DOMDocument();
+			// Load as UTF-8 to prevent character corruption
+			@$dom->loadHTML(mb_convert_encoding($html_to_pdf, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+			$xpath = new DOMXPath($dom);
+
+			// Update <link rel="stylesheet">
+			foreach ($xpath->query('//link[@rel="stylesheet" and @href]') as $link) {
+				$path = $resolveToLocalPath($link->getAttribute('href'), $base_url, $app_root);
+				if ($path && file_exists($path)) {
+					// Option: Inline CSS here if preferred by replacing the node, 
+					// or just set the attribute to the absolute path for mPDF
+					$link->setAttribute('href', $path);
 				}
+			}
 
-				// Resolve relative url() paths in background-image (and other CSS
-				// properties) to absolute filesystem paths.  When stylesheets are
-				// inlined into <style> tags the browser/mPDF can no longer resolve
-				// relative paths against the CSS file's directory, so we rewrite
-				// them here.  Where possible we embed as data-URIs (base64) for
-				// maximum PDF compatibility.
-				if ($app_root !== false) {
-					$html_to_pdf = preg_replace_callback(
-						'/url\(\s*["\']?\s*(\.\.\/[^)\s"\']+|\.\/[^)\s"\']+)\s*["\']?\s*\)/',
-						function ($m) use ($app_root) {
-							$rel = $m[1];
-							$rel = str_replace('\\', '/', $rel);
-							$resolved = null;
-							// Try to resolve against known invoice template directories
-							$dirs = glob($app_root . '/templates/invoices/*/style.css');
-							foreach ($dirs as $cssFile) {
-								$cssDir = str_replace('\\', '/', dirname($cssFile));
-								$candidate = rtrim($cssDir, '/') . '/' . $rel;
-								// Normalise ../ segments
-								while (strpos($candidate, '/../') !== false) {
-									$candidate = preg_replace('#/[^/]+/\.\.#', '', $candidate, 1);
-								}
-								$real = str_replace('\\', '/', realpath($candidate) ?: $candidate);
-								if (is_file($real)) {
-									$resolved = $real;
-									break;
-								}
-							}
-							// Fallback: resolve relative to app root
-							if ($resolved === null) {
-								$candidate = $app_root . '/' . $rel;
-								while (strpos($candidate, '/../') !== false) {
-									$candidate = preg_replace('#/[^/]+/\.\.#', '', $candidate, 1);
-								}
-								$real = str_replace('\\', '/', realpath($candidate) ?: $candidate);
-								if (is_file($real)) {
-									$resolved = $real;
-								}
-							}
-							if ($resolved === null) {
-								return $m[0];
-							}
-							// Embed as data-URI for maximum PDF compatibility
-							$ext = strtolower(pathinfo($resolved, PATHINFO_EXTENSION));
-							$mimeMap = ['svg' => 'image/svg+xml', 'png' => 'image/png', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'gif' => 'image/gif', 'webp' => 'image/webp'];
-							$mime = $mimeMap[$ext] ?? 'application/octet-stream';
-							$data = @file_get_contents($resolved);
-							if ($data !== false) {
-								$base64 = base64_encode($data);
-								return 'url("data:' . $mime . ';base64,' . $base64 . '")';
-							}
-							return 'url("' . $resolved . '")';
-						},
-						$html_to_pdf
-					);
+			// Update <img> src
+			foreach ($xpath->query('//img[@src]') as $img) {
+				$path = $resolveToLocalPath($img->getAttribute('src'), $base_url, $app_root);
+				if ($path && file_exists($path)) {
+					$img->setAttribute('src', $path);
 				}
+			}
+			
+			$html_to_pdf = $dom->saveHTML();
 
-				$format = $sysDefaults['pdfpapersize'] ?? 'A4';
+			try {		
 				$mpdf = new \Mpdf\Mpdf([
 					'mode' => 'utf-8',
-					'format' => $format,
-					'orientation' => 'P',
-					'margin_left'   => (float) ($sysDefaults['pdfleftmargin'] ?? 15),
-					'margin_right'  => (float) ($sysDefaults['pdfrightmargin'] ?? 15),
-					'margin_top'    => (float) ($sysDefaults['pdftopmargin'] ?? 15),
-					'margin_bottom' => (float) ($sysDefaults['pdfbottommargin'] ?? 15),
-					'useSubstitutions' => true,
+					'format' => $sysDefaults['pdfpapersize'] ?? 'A4',
+					'margin_left' => (float)($sysDefaults['pdfleftmargin'] ?? 15),
+					'margin_right' => (float)($sysDefaults['pdfrightmargin'] ?? 15),
+					'margin_top' => (float)($sysDefaults['pdftopmargin'] ?? 15),
+					'margin_bottom' => (float)($sysDefaults['pdfbottommargin'] ?? 15),
 				]);
 
 				$mpdf->WriteHTML($html_to_pdf);
@@ -3527,7 +3446,6 @@ function pdfThis($html, $file_location = '', $pdfname = 'invoice')
 
 	//echo "location: ".$file_location;
 	convert_to_pdf($html, $pdfname, $file_location);
-
 }
 
 // ------------------------------------------------------------------------------
