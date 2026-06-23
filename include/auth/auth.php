@@ -9,21 +9,47 @@
  * missing, allow the request through without a session so index.php can route
  * to module=install (otherwise login is required before routing runs).
  */
-$auth_exempt_api_views = ['paypal', 'stripe_checkout', 'cron'];
-$is_exempt_api = ($module === 'api' && in_array($view, $auth_exempt_api_views, true));
 
 $installer_incomplete = !$install_tables_exists || !checkDataExists(1);
+$require_auth = (function () use ($module, $view) :bool {
+	switch($module){
+		case 'api':
+			$auth_exempt_views = [
+				'cron',
+				'paypal',
+				
+				'paypal_checkout', 
+				'stripe_checkout',
+				'mollie_checkout',
+				'authorizenet_checkout',
+				'kofi_checkout',
+				'coinbase_checkout',
+				'adyen_checkout',
+				'eway_checkout',
+				'paymentsgateway_checkout',				
+			];
+			return !in_array($view, $auth_exempt_views, true);
+		
+		case 'payment':
+			$auth_exempt_views = [
+				'success', 
+				'cancel'
+			];
+			return !in_array($view, $auth_exempt_views, true);
+	}
 
-if (!$is_exempt_api) {
-	if (!isset($auth_session->id)){
-	  if(!isset($_GET['module'])) {
-	    $_GET['module'] = '';
-	  }
-		if  ($_GET['module'] !== "auth" && !$installer_incomplete) {
+	return true;
+})();
+
+if ($require_auth) {
+	if (!isset($auth_session->id)) {
+		if (!isset($_GET['module'])) {
+			$_GET['module'] = '';
+		}
+		if ($_GET['module'] !== "auth" && !$installer_incomplete) {
 			$siBase = rtrim(str_replace('\\', '', dirname($_SERVER['PHP_SELF'])), '/');
 			header('Location: ' . $siBase . '/?module=auth&view=login');
 			exit;
 		}
-
 	}
 }
