@@ -9,7 +9,7 @@
  * missing, allow the request through without a session so index.php can route
  * to module=install (otherwise login is required before routing runs).
  */
-$auth_exempt_api_views = ['paypal', 'cron'];
+$auth_exempt_api_views = ['paypal', 'stripe_checkout', 'cron'];
 $is_exempt_api = ($module === 'api' && in_array($view, $auth_exempt_api_views, true));
 
 $installer_incomplete = !$install_tables_exists || !checkDataExists(1);
