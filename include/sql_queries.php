@@ -3296,7 +3296,7 @@ function getURL()
 	$dir = dirname($_SERVER['PHP_SELF'] ?? '');
 	//remove incorrect slashes for WinXP etc.
  	$dir = str_replace('\\','',$dir);
-	$dir = rtrim($dir, '/');
+	//$dir = rtrim($dir, '/');
 
 	$_SERVER['FULL_URL'] = si_request_is_https() ? 'https://' : 'http://';
 
