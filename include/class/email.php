@@ -80,6 +80,8 @@ class email
 			{
 				$mail->addAttachment('./tmp/cache/'.$this->attachment);
 			}
+
+			var_dump(realpath('./tmp/cache/'));exit;
 			
 			$mail->send();
 
