@@ -79,6 +79,12 @@ function smarty_function_online_payment_link($params, $_unused = null) {
             continue;
         }
         $href = htmlspecialchars($siUrl, ENT_QUOTES) . '/index.php?module=api&view=' . urlencode($gw['url_key']) . '&invoice_id=' . $invoice_id;
+        var_dump(
+            $href,
+            $siUrl,
+            htmlspecialchars($siUrl, ENT_QUOTES),
+            '/index.php?module=api&view=' . urlencode($gw['url_key']) . '&invoice_id=' . $invoice_id
+        );
         $label = htmlspecialchars($LANG[$gw['label_key']] ?? $gw['label_def'], ENT_QUOTES, 'UTF-8');
         $target = isset($gw['target']) ? ' target="' . htmlspecialchars($gw['target'], ENT_QUOTES) . '"' : '';
         $iconUrl = htmlspecialchars($url, ENT_QUOTES) . '/templates/invoices/img/payments/' . urlencode($gw['icon']) . '.svg';
