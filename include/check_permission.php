@@ -11,12 +11,6 @@ $acl_view   = $_GET['view'] ?? null;
 $acl_action = $_GET['action'] ?? null;
 $role_name  = $auth_session->role_name ?? '';
 
-var_dump($acl_view , 
-$acl_action, 
-$role_name, 
-$module, 
-$auth_session->role_name);
-
 if ($acl_action === null && $acl_view !== null) {
 	$checkPermission = $acl->isAllowed($role_name, $module, $acl_view) ? "allowed" : "denied";
 } elseif ($acl_action !== null) {
