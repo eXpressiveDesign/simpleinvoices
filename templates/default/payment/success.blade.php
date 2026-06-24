@@ -1,4 +1,4 @@
-<div class="container-xl">
+<div class="container-xl py-5">
 	<div class="row justify-content-center">
 		<div class="col-md-6">
 			<div class="card">
