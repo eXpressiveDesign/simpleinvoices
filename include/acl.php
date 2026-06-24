@@ -29,10 +29,6 @@ class SimpleAcl
 
     public function isAllowed(?string $role, ?string $resource, ?string $privilege = null): bool
     {
-        $role = $role ?: 'guest';
-
-        var_dump($rule, $role, $resource, $privilege);
-
         foreach ($this->denyRules as $rule) {
             if ($this->matchesRule($rule, $role, $resource, $privilege)) {
                 return false;
@@ -98,6 +94,7 @@ $acl->addResource('invoices');
 $acl->addResource('options');
 $acl->addResource('payment_types');
 $acl->addResource('payment_terms');
+$acl->addResource('payment');
 $acl->addResource('payments');
 $acl->addResource('preferences');
 $acl->addResource('product_attribute');
@@ -115,6 +112,7 @@ $acl->addResource('expense_account');
 $acl->allow(null, 'auth');
 $acl->allow(null, 'api');
 $acl->allow(null, 'payments', 'ach');
+$acl->allow(null, 'payment');
 $acl->allow(null, 'invoices');
 $acl->allow('customer', 'customers', 'view');
 $acl->allow('customer', 'export', 'invoice');
