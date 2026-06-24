@@ -44,7 +44,7 @@ class SimpleAcl
         return false;
     }
 
-    private function matchesRule(array $rule, string $role, ?string $resource, ?string $privilege): bool
+    private function matchesRule(array $rule, ?string $role, ?string $resource, ?string $privilege): bool
     {
         [$ruleRole, $ruleResource, $rulePrivilege] = $rule;
 
