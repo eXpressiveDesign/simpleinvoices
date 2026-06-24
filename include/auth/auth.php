@@ -17,9 +17,10 @@ $require_auth = (function () use ($module, $view) :bool {
 			$auth_exempt_views = [
 				'cron',
 				'paypal',
-				
+
 				'paypal_checkout', 
 				'stripe_checkout',
+				'stripe_webhook',
 				'mollie_checkout',
 				'authorizenet_checkout',
 				'kofi_checkout',
