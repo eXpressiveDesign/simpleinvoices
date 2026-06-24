@@ -1,7 +1,7 @@
 <?php
-
 checkLogin();
 
+$menu       = false;
 $gateway    = filenameEscape($_GET['gateway'] ?? '');
 $invoice_id = (int) ($_GET['invoice_id'] ?? 0);
 

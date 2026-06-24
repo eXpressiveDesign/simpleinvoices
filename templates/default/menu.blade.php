@@ -14,7 +14,6 @@
 @endphp
 
 {{-- Row 1: Top bar - logo + user controls --}}
-@if(!empty($currentRoleName))
 <header class="navbar navbar-expand-md d-print-none" data-bs-theme="dark">
     <div class="container-xl">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="{{ $LANG['toggle_navigation'] ?? '' }}">
@@ -211,9 +210,9 @@
                             <span class="nav-link-title">{{ $LANG['all_reports'] ?? '' }}</span>
                         </a>
                     </li>
+
                 </ul>
                 @endif
-
                 @if(!$isCustomerRole)
                 <ul class="navbar-nav ms-md-auto">
                     {{-- Domain Admin (domain_administrator + administrator) --}}
@@ -326,7 +325,6 @@
         </div>
     </div>
 </header>
-@endif
 
 @stack('hook_tabmenu_end')
 
