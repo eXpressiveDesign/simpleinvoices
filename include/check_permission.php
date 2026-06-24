@@ -39,5 +39,5 @@ if (($auth_session->role_name == 'customer')
 	}
 }
 
-//echo $module." :: ".$_GET['action'];
+echo $module." :: ".$_GET['action'];
 $checkPermission == "denied" ? exit($LANG['denied_page']) : "";
