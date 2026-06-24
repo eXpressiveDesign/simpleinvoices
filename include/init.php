@@ -224,8 +224,6 @@ $early_exit[] = "payments_print";
 #$early_exit[] = "reports_report_statement";
 $early_exit[] = "documentation_view";
 $early_exit[] = "user_save_ui_language";
-$early_exit[] = "payment_success";
-$early_exit[] = "payment_cancel";
 //$early_exit[] = "install_index";
 // Backup download must run before any HTML is output so it can send file headers
 if ($module === 'billers' && $view === 'logo') {
