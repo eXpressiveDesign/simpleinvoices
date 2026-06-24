@@ -31,6 +31,8 @@ class SimpleAcl
     {
         $role = $role ?: 'guest';
 
+        var_dump($rule, $role, $resource, $privilege);
+
         foreach ($this->denyRules as $rule) {
             if ($this->matchesRule($rule, $role, $resource, $privilege)) {
                 return false;
